@@ -35,7 +35,7 @@ Hi! I'm **Ambigathi**, a fresher data scientist with experience in **machine lea
 ## 🚀 Demo
 
 Check out the live demo of the **Streamlit app** for real-time predictions:  
-['](https://churnpchurn-prediction-ann-xwhh6nuesciocbrxmgau66.streamlit.app/)
+![Streamlit App Screenshot](https://github.com/Ambigapathi-V/Churn-Prediction-ANN/blob/main/churn%20preduction.png)
 
 ---
 
