@@ -28,14 +28,14 @@ This project focuses on predicting **customer churn** using machine learning. By
 Hi! I'm **Ambigathi**, a fresher data scientist with experience in **machine learning**, **API development**, and **model deployment**. I'm passionate about creating solutions that have real-world impact.
 
 - **LinkedIn**: [linkedin.com/in/ambigathi](https://www.linkedin.com/in/ambigathi)
-- **GitHub**: [github.com/yourusername](https://github.com/Ambigapathi-V)
+- **GitHub**: [github.com/Ambigapathi-V](https://github.com/Ambigapathi-V)
 
 ---
 
 ## 🚀 Demo
 
 Check out the live demo of the **Streamlit app** for real-time predictions:  
-[Live Demo Link](https://churnpchurn-prediction-ann-xwhh6nuesciocbrxmgau66.streamlit.app/)
+![Streamlit App Screenshot](https://github.com/Ambigapathi-V/Churn-Prediction-ANN/blob/main/churn%20preduction.png)
 
 ---
 
@@ -119,12 +119,6 @@ Contributions are welcome! To contribute:
 3. Commit your changes (`git commit -m 'Add new feature'`).
 4. Push to the branch (`git push origin feature-branch`).
 5. Open a pull request.
-
----
-
-## 📷 Screenshots
-
-![Streamlit App Screenshot]()
 
 ---
 
