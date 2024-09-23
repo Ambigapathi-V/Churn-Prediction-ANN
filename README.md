@@ -28,7 +28,7 @@ This project focuses on predicting **customer churn** using machine learning. By
 Hi! I'm **Ambigathi**, a fresher data scientist with experience in **machine learning**, **API development**, and **model deployment**. I'm passionate about creating solutions that have real-world impact.
 
 - **LinkedIn**: [linkedin.com/in/ambigathi](https://www.linkedin.com/in/ambigathi)
-- **GitHub**: [github.com/yourusername](https://github.com/Ambigapathi-V)
+- **GitHub**: [github.com/Ambigapathi-V](https://github.com/Ambigapathi-V)
 
 ---
 
