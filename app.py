@@ -1,64 +1,89 @@
 import streamlit as st
-import requests
+import numpy as np
+import tensorflow as tf
 import pandas as pd
-import time
+import pickle
 
-# Streamlit App Title
-st.title("Customer Churn Prediction")
+# Load the trained model and encoders
+model = tf.keras.models.load_model('model.h5')
 
-# Create input fields for the required columns in 3 columns
-with st.form("customer_form"):
-    # Create 3 columns
-    col1, col2, col3 = st.columns(3)
-    
-    # Inputs for column 1
-    with col1:
-        CreditScore = st.slider("Credit Score", min_value=300, max_value=900, value=600, step=1)
-        Geography = st.selectbox("Geography", ['France', 'Spain', 'Germany'])
-        Gender = st.selectbox("Gender", ['Male', 'Female'])
+with open('label_encoder_gender.pkl', 'rb') as file:
+    label_encoder_gender = pickle.load(file)
 
-    # Inputs for column 2
-    with col2:
-        Age = st.slider("Age", min_value=18, max_value=100, value=30, step=1)
-        Tenure = st.slider("Tenure (years)", min_value=0, max_value=10, value=2, step=1)
-        Balance = st.number_input("Balance", min_value=0.0, value=0.0, step=0.01)
+with open('onehot_encoder_geo.pkl', 'rb') as file:
+    onehot_encoder_geo = pickle.load(file)
 
-    # Inputs for column 3
-    with col3:
-        NumOfProducts = st.selectbox("Number of Products", [1, 2, 3, 4])
-        HasCrCard = st.selectbox("Has Credit Card", ["No", "Yes"])  # No for 0, Yes for 1
-        IsActiveMember = st.selectbox("Is Active Member", ["No", "Yes"])  # No for 0, Yes for 1
-        EstimatedSalary = st.number_input("Estimated Salary", min_value=0.0, value=0.0, step=0.01)
-    
-    # Submit button inside the form
-    submitted = st.form_submit_button("Submit")
-    
-    if submitted:
-        # Prepare payload for API call
-        payload = {
-            "CreditScore": CreditScore,
-            "Geography": Geography,
-            "Gender": Gender,
-            "Age": Age,
-            "Tenure": Tenure,
-            "Balance": Balance,
-            "NumOfProducts": NumOfProducts,
-            "HasCrCard": 1 if HasCrCard == "Yes" else 0,
-            "IsActiveMember": 1 if IsActiveMember == "Yes" else 0,
-            "EstimatedSalary": EstimatedSalary
-        }
+with open('scaler.pkl', 'rb') as file:
+    scaler = pickle.load(file)
 
-        # Show processing message and make prediction
-        with st.spinner("Processing data..."):
-            time.sleep(1)  # Simulate processing time
-            # Call the FastAPI endpoint
-            response = requests.post("http://127.0.0.1:8000/predict/", json=payload)
-            result = response.json()
+# Streamlit app title
+st.title('Customer Churn Prediction')
 
-        # Display result after processing
-        if result["likely_to_churn"]:
-            st.write("The customer is likely to churn.")
-        else:
-            st.write("The customer is not likely to churn.")
-        
-        st.write(f"Churn Probability: {result['churn_probability']:.2f}")
+# Create input fields in a 3x3 grid
+col1, col2, col3 = st.columns(3)
+
+# First row
+with col1:
+    geography = st.selectbox('Geography', onehot_encoder_geo.categories_[0])
+with col2:
+    gender = st.selectbox('Gender', label_encoder_gender.classes_)
+with col3:
+    age = st.slider('Age', 18, 92)
+
+# Second row
+with col1:
+    balance = st.number_input('Balance', min_value=0.0)
+with col2:
+    credit_score = st.number_input('Credit Score', min_value=300, max_value=850)
+with col3:
+    estimated_salary = st.number_input('Estimated Salary', min_value=0.0)
+
+# Third row
+with col1:
+    tenure = st.slider('Tenure', 0, 10)
+with col2:
+    num_of_products = st.slider('Number of Products', 1, 4)
+with col3:
+    has_cr_card = st.selectbox('Has Credit Card', ['No', 'Yes'])
+
+# Length slider
+length = st.slider('Select Length', min_value=1, max_value=100, value=50)
+
+# Button to trigger prediction
+if st.button('Predict'):
+    # Prepare the input data
+    input_data = pd.DataFrame({
+        'CreditScore': [credit_score],
+        'Gender': [label_encoder_gender.transform([gender])[0]],
+        'Age': [age],
+        'Tenure': [tenure],
+        'Balance': [balance],
+        'NumOfProducts': [num_of_products],
+        'HasCrCard': [1 if has_cr_card == 'Yes' else 0],
+        'IsActiveMember': [0],  # Placeholder; adjust based on your use case
+        'EstimatedSalary': [estimated_salary]
+    })
+
+    # One-hot encode 'Geography'
+    geo_encoded = onehot_encoder_geo.transform([[geography]]).toarray()
+    geo_encoded_df = pd.DataFrame(geo_encoded, columns=onehot_encoder_geo.get_feature_names_out(['Geography']))
+
+    # Combine one-hot encoded columns with input data
+    input_data = pd.concat([input_data.reset_index(drop=True), geo_encoded_df], axis=1)
+
+    # Scale the input data
+    input_data_scaled = scaler.transform(input_data)
+
+    # Show loading spinner while predicting
+    with st.spinner('Predicting...'):
+        # Predict churn
+        prediction = model.predict(input_data_scaled)
+        prediction_proba = prediction[0][0]
+
+    # Display results after prediction
+    st.success(f'Churn Probability: {prediction_proba:.2f}')
+
+    if prediction_proba > 0.5:
+        st.write('The customer is likely to churn.')
+    else:
+        st.write('The customer is not likely to churn.')
