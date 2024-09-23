@@ -122,12 +122,6 @@ Contributions are welcome! To contribute:
 
 ---
 
-## 📷 Screenshots
-
-![Streamlit App Screenshot]()
-
----
-
 ## ⚙️ Run Locally
 
 To run this project locally:
